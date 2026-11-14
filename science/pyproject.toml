@@ -5,15 +5,37 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "earthnext"
 version = "0.0.0"
-description = "EARTH//NEXT science pipeline: NASA MOD13C2 NDVI ingest, trend detection, export."
+description = "EARTH//NEXT science pipeline: NASA MOD13A3 NDVI ingest, trend detection, export."
 requires-python = ">=3.11,<3.13"
-dependencies = []
+# Runtime deps — needed for `npm run process` and the stats tests. Lower bounds
+# are what we developed against; upper bounds left open so pip picks something
+# compatible on a fresh machine. If you need reproducibility across machines,
+# commit a requirements.lock made with `pip freeze > requirements.lock`.
+dependencies = [
+  "numpy>=2.0",
+  "pandas>=2.2",
+  "xarray>=2025.1",
+  "netCDF4>=1.7",         # NetCDF backend for xarray (AppEEARS output)
+  "pyhdf>=0.11",          # HDF-EOS reader for direct LP DAAC MOD13C2 files
+  "scipy>=1.14",          # theilslopes + stats
+  "statsmodels>=0.14",    # multipletests (BH FDR)
+  "pymannkendall>=1.4",   # Mann-Kendall + Hamed-Rao + prewhitened variants
+  "pydantic>=2.9",        # Provenance + schema models
+  "pyyaml>=6.0",          # read science/config/analysis.yaml
+  "python-dateutil>=2.9",
+  "cftime>=1.6",          # transitive for netCDF4 time handling
+]
 
 [project.optional-dependencies]
-# Stage 1 scaffold: only what the gate needs. Science stack lands in Stage 2.
 dev = [
   "pytest>=8",
   "ruff>=0.5",
+]
+# Only needed if you want to run scripts/fetch_one_mod13c2.py or
+# scripts/fetch_earth_texture.py (ships the Earth texture is a one-time
+# urllib download so it does not need this). Install with: pip install -e './science[earthdata]'
+earthdata = [
+  "earthaccess>=0.14",
 ]
 
 [tool.setuptools.packages.find]

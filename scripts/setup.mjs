@@ -26,9 +26,12 @@ if (!existsSync(venvPy)) {
   run("python", ["-m", "venv", "science/.venv"]);
 }
 
-console.log("Installing Python deps ...");
+console.log("Installing Python deps (runtime + dev + earthdata) ...");
 run(venvPy, ["-m", "pip", "install", "--upgrade", "pip", "-q"]);
-run(venvPy, ["-m", "pip", "install", "-e", "./science[dev]", "-q"]);
+// [dev,earthdata] picks up pytest+ruff AND earthaccess. The runtime deps
+// (numpy/pandas/xarray/netCDF4/pyhdf/scipy/statsmodels/pymannkendall/pydantic/pyyaml)
+// come from the project's own `dependencies` list and install automatically.
+run(venvPy, ["-m", "pip", "install", "-e", "./science[dev,earthdata]"]);
 
 console.log("Installing web deps ...");
 run("pnpm", ["--dir", "web", "install"]);
