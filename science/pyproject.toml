@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "earthnext"
+version = "0.0.0"
+description = "EARTH//NEXT science pipeline: NASA MOD13C2 NDVI ingest, trend detection, export."
+requires-python = ">=3.11,<3.13"
+dependencies = []
+
+[project.optional-dependencies]
+# Stage 1 scaffold: only what the gate needs. Science stack lands in Stage 2.
+dev = [
+  "pytest>=8",
+  "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv", "data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]

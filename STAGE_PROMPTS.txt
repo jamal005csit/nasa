@@ -1,0 +1,93 @@
+EARTH//NEXT - STAGE PROMPTS (paste ONE at a time, never all at once)
+
+Start every stage with this line:
+"Read AGENTS.md, docs/PROJECT_STATE.md and docs/SPEC.md first. Then do exactly this stage and nothing else. When done, report PASS/FAIL with real command output, update docs/PROJECT_STATE.md and docs/ai-use-log.md, and stop."
+
+=====================================================================
+STAGE 0 - Audit
+=====================================================================
+Inspect everything in docs/official/ and any resource pack folder, plus the repo. Do NOT write code.
+Create docs/resource-audit.md with: exact dataset names, source URLs, variables, units, time coverage, temporal and spatial resolution, file formats, quality flags/fill values, permitted use/license, and every instruction, deliverable and requirement in the challenge text. Add a section "Unknowns".
+Also fill docs/crosswalk-source.md: the official requirements as a numbered list (paraphrased), to feed the Crosswalk page later.
+Then propose the smallest valid P0 data path and TWO candidate region pairs, scored with: time span >= 15 years (x3), regional contrast likely (x3), processing cost fits 6 hours (x3), quality flags clear (x2), Egypt/MENA relevance (x2), second related variable available (x2), globe visual appeal (x1). Justify from the data, do not assume.
+Gate: audit file exists and every claim traces to a file. Ask me to approve the variable and region pair. STOP.
+
+=====================================================================
+STAGE 1 - Scaffold
+=====================================================================
+Create the repo layout from SPEC.txt section 4: Next.js App Router + TypeScript + Tailwind in /web, Python 3.12 env in /science, pytest + vitest config, ruff, and a Makefile (or package scripts) with targets: setup, process, test, dev, build. Add design tokens from SPEC section 5 to the Tailwind theme.
+Gate: `make test` and `pnpm --dir web build` pass on the empty app. Print the exact commands.
+
+=====================================================================
+STAGE 2 - Ingest + validate
+=====================================================================
+Implement science/src/earthnext/{ingest,validate,provenance}.py for the approved dataset only.
+Validate: timestamps ordered and unique, units, fill values, missing %, spatial bounds. Emit a provenance JSON per SPEC science rule 10.
+Tests: one tiny synthetic fixture labeled SYNTHETIC under science/tests/fixtures/, plus one test that reads the real file's metadata.
+Gate: pytest passes; `make process-ingest` prints a validation report with real counts.
+
+=====================================================================
+STAGE 3 - Statistics engine (test first)
+=====================================================================
+Implement trends.py: annual or deseasonalized aggregation with the coverage rule, Theil-Sen slope with 95% CI, Mann-Kendall p-value, lag-1 autocorrelation check with modified MK (Hamed-Rao) or prewhitening fallback, cos(lat) area-weighted regional means, Benjamini-Hochberg q-values for cell/region sets.
+Write tests FIRST with known series: pure linear, zero-trend noise (rejection rate ~ alpha over many seeds), step change, seasonal sine + trend, AR(1), missing-data patterns. Cross-check against scipy and pymannkendall (if installed).
+Gate: all tests pass; docs/methodology.md drafted with assumptions, limits and the independent-check result.
+
+=====================================================================
+STAGE 4 - Export contract
+=====================================================================
+Implement export.py writing web/public/data/*.json: results with full provenance, regional series, a trend-grid GeoJSON/binary for the map. Create matching pydantic models and zod schemas (web/src/lib/schemas.ts). Add a test that every exported file validates in Python and TypeScript.
+Gate: schema tests pass; list file sizes (each < 1-2 MB, hard max 5 MB).
+
+=====================================================================
+STAGE 5 - Mission Control + globe
+=====================================================================
+Build AppShell, TopNavigation, PlanetSwitcher (Earth enabled only), lazy-loaded PlanetGlobe with a WebGL fallback to a 2D map, featured-finding card read from exported JSON, and a bottom TimelineScrubber that filters the displayed period. Loading/error/empty states required. URL query-string state.
+Gate: pnpm build + vitest pass; screenshots at 1440px and 1280px; scrubbing changes visible state.
+
+=====================================================================
+STAGE 6 - Signal Atlas + Trend Lab + Evidence Receipts
+=====================================================================
+Build Signal Atlas (variable/period/region select, slope map with significance hatching, tests-count + FDR note). Build Trend Lab: the four answer cards (What / Where / How much / Is it significant), ECharts time series with trend + CI band, "View as table" toggle, SignificanceBadge, MethodologyDrawer, DataProvenancePanel, and an Evidence Receipt drawer on every metric.
+Gate: a test compares every displayed number to its JSON value; non-significant and missing-data states render correctly; language-rules lint test passes.
+
+=====================================================================
+STAGE 7 - Robustness Panel + ESI
+=====================================================================
+Python: robustness.py (start/end window sensitivity, method agreement Theil-Sen vs OLS-HAC (+ seasonal Kendall if monthly), leave-one-year-out) and esi.py (rubric from SPEC section 3, thresholds in science/config/analysis.yaml). Export results to JSON. Web: Robustness Panel with the three small charts and a computed one-line verdict, plus an ESI badge with hover breakdown (label it a project-defined heuristic).
+Gate: tests for ESI scoring edge cases and robustness on known series; verdict text comes from JSON.
+
+=====================================================================
+STAGE 8 - Compare (Region Duel)
+=====================================================================
+Build Region A vs B: synchronized charts, identical method/units/period, difference-of-slopes with bootstrap CI (Python), comparability warnings (period, resolution, units), plain-language text from deterministic templates. Never imply shared cause.
+Gate: template tests for both-significant-opposite, one-significant, neither-significant; bootstrap test on a known series.
+
+=====================================================================
+STAGE 9 - Decision Lab + Brief (+ Decision Studio only if time)
+=====================================================================
+Python threshold.py and TS scenario-engine.ts exactly per SPEC section 2 item 6: time-to-threshold at slope and CI ends (with the "cannot be bounded" rule), continuation with CI fan, stabilization, reduction, custom, monitoring-lens years-to-CI, risk-communication allowed/not-allowed statements. Mandatory label "Illustrative scenario - not a validated causal forecast". Formula drawer. Unit tests against hand-computed values.
+Decision Brief from structured JSON only (no free-form text), export PDF and Markdown.
+Decision Studio (P1 stretch): only start if everything above passes. Per SPEC item 7, including the flip-point sensitivity sweep and unit tests.
+Gate: tests pass; every brief sentence maps to a data field.
+
+=====================================================================
+STAGE 10 - Story Mode, Crosswalk, a11y, Frontier
+=====================================================================
+Story Mode (90 s scripted camera + panel sequence, captions, skippable, reduced-motion safe, works offline). Challenge Crosswalk page generated from docs/crosswalk-source.md. Keyboard navigation, focus states, chart text alternatives, colorblind-safe pairing. Then Frontier Explorer (Moon/Mars textured globes, planet switcher enabled, sourced context cards with URL + license, mandatory banner, no fabricated readings).
+Gate: axe or Lighthouse accessibility run reported; WebGL-off fallback verified; Story Mode plays end to end with network off.
+
+=====================================================================
+STAGE 11 - Release
+=====================================================================
+Write README.md (setup, process, test, run, deploy), docs/{methodology,sources-and-attribution,ai-use-disclosure,demo-script}.md, finalize docs/ai-use-log.md. Run full pytest + vitest + build. Verify all links. Give static deploy steps for Vercel (no secrets). Produce a 150-word and a 500-word project description using ONLY facts found in docs/.
+Gate: clean-clone test: clone -> setup -> process -> test -> build all succeed with the printed commands.
+
+=====================================================================
+RECOVERY PROMPTS (when the agent drifts)
+=====================================================================
+- "Stop. Re-read AGENTS.md. List which hard rule you just violated and fix it."
+- "You wrote a number into a component. Replace it with a value loaded from JSON and add a test."
+- "Run the tests and paste the real output. Do not summarize."
+- "Reduce scope: remove everything not required by the current stage gate."
+- "You are ahead of the stage. Revert to the current stage only and update PROJECT_STATE."

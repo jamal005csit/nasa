@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "name": "earthnext_sahara_interior",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sahara Interior (Western Desert, Egypt)",
+        "source": "EARTH//NEXT Stage 0 locked region",
+        "bbox_min_lat": 24.0,
+        "bbox_max_lat": 26.0,
+        "bbox_min_lon": 26.0,
+        "bbox_max_lon": 28.0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [26.0, 24.0],
+          [28.0, 24.0],
+          [28.0, 26.0],
+          [26.0, 26.0],
+          [26.0, 24.0]
+        ]]
+      }
+    }
+  ]
+}

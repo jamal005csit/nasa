@@ -1,0 +1,184 @@
+{
+  "source": {
+    "kind": "NASA",
+    "note": "MOD13A3.061 via NASA AppEEARS (nile_delta=1, sahara_interior=1 monthly files)."
+  },
+  "region": {
+    "slug": "nile_delta",
+    "name": "Nile Delta",
+    "bbox": {
+      "min_lat": 29.5,
+      "max_lat": 31.5,
+      "min_lon": 30.0,
+      "max_lon": 32.0
+    }
+  },
+  "annual": {
+    "years": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+    ],
+    "values": [
+      0.32920316147786893,
+      0.33045621846567935,
+      0.33208121052468237,
+      0.3324984943323592,
+      0.3419560355064886,
+      0.3417744920689137,
+      0.3483964218300011,
+      0.3447841847323277,
+      0.3416057246508825,
+      0.33635189384652997,
+      0.3290194551540875,
+      0.34265175894647376,
+      0.35083787767052294,
+      0.3450983786949287,
+      0.3458265025608002,
+      0.34485026360502774,
+      0.3417155328536186,
+      0.34526904459696994,
+      0.3405920480194107,
+      0.3503283757151833,
+      0.35127898894750764,
+      0.3432960183537234,
+      0.3473747240088591,
+      0.35279128562388135,
+      0.3494865452288966,
+      0.35442434413178453,
+      0.3707926146892211
+    ],
+    "valid_months_per_year": [
+      11,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      9
+    ]
+  },
+  "trend": {
+    "estimator": "theil_sen",
+    "slope_per_year": 0.000794303596517893,
+    "slope_ci95": [
+      0.0005004438057221033,
+      0.0011037913734819355
+    ],
+    "slope_ci_excludes_zero": true,
+    "intercept": -1.254148955058191,
+    "n": 27,
+    "units": "NDVI / year"
+  },
+  "significance": {
+    "test": "hamed_rao",
+    "p": 3.2957823137280684e-9,
+    "z": 5.916143226725961,
+    "tau": 0.584045584045584,
+    "trend_direction": "increasing",
+    "lag1_autocorr": 0.6952440567703909,
+    "significant_at_005": true,
+    "p_display": "p < 0.001"
+  },
+  "coverage": {
+    "n_valid_years": 27,
+    "n_total_years": 27,
+    "missing_pct": 0.0
+  },
+  "provenance": {
+    "dataset": "MOD13A3 061",
+    "source_url": "https://lpdaac.usgs.gov/products/mod13a3v061/",
+    "variable": "ndvi",
+    "units": "1",
+    "time_range": [
+      "2000-01",
+      "2026-12"
+    ],
+    "spatial_extent": {
+      "min_lat": 29.5,
+      "max_lat": 31.5,
+      "min_lon": 30.0,
+      "max_lon": 32.0
+    },
+    "resolution": "MOD13A3 1 km monthly SIN (AppEEARS geographic re-grid)",
+    "filters_applied": [
+      "fill(-3000)->NaN",
+      "scale*0.0001",
+      "pixel_reliability > 1 masked",
+      "cos(lat) area-weighted regional mean within bbox (29.5, 31.5, 30.0, 32.0)",
+      "annual mean with ≥9 valid months"
+    ],
+    "method": {
+      "estimator": "theil_sen",
+      "test": "hamed_rao",
+      "fdr_method": "benjamini_hochberg",
+      "alpha": 0.05
+    },
+    "n_valid": 27,
+    "missing_pct": 0.0,
+    "slope": 0.000794303596517893,
+    "slope_ci95": [
+      0.0005004438057221033,
+      0.0011037913734819355
+    ],
+    "p": 3.2957823137280684e-9,
+    "q": null,
+    "script_commit": "untracked",
+    "config_hash": "f3ed0d8fcdcf1b331fa2b8038f9c1d1ed1ba56950ba7ccf544469e673952413b",
+    "data_checksum": "c6d7b1f63e96a91fa50fc252c8c6ed356d183dc351823c0268137ba8c63c0a92",
+    "library_versions": {
+      "numpy": "2.4.6",
+      "pandas": "3.1.1",
+      "xarray": "2026.9.0",
+      "scipy": "1.17.1",
+      "statsmodels": "0.15.0",
+      "pymannkendall": "1.4.3",
+      "pydantic": "2.14.3"
+    },
+    "generated_at": "2026-11-14T19:35:42Z"
+  }
+}

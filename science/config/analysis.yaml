@@ -1,0 +1,47 @@
+# EARTH//NEXT analysis thresholds and weights.
+# Everything here is configuration, not code. Changing a value changes results;
+# change the config_hash (any Provenance record) tracks that change.
+
+# --- aggregation ---
+aggregation:
+  # SPEC §3 rule 2: annual means with "≥ 9 of 12 valid months" coverage rule.
+  min_valid_months_per_year: 9
+
+# --- trend test ---
+trend:
+  estimator: theil_sen
+  confidence_level: 0.95
+  significance_alpha: 0.05
+  # Lag-1 autocorrelation handling.
+  # If |rho| < threshold → plain Mann-Kendall.
+  # Else → Hamed-Rao modified MK (default) or prewhitened MK.
+  autocorr_threshold: 0.10
+  autocorr_variant: hamed_rao   # one of: hamed_rao, prewhitened
+
+# --- multiple testing ---
+multiple_testing:
+  method: benjamini_hochberg
+  q_threshold: 0.05
+
+# --- Evidence Strength Index (ESI) — project-defined heuristic per SPEC §3 ---
+# Point weights for the 0–10 ESI. Grade cutoffs at the bottom.
+esi:
+  points:
+    years_ge_15:              2   # ≥ 15 years of valid annual data
+    missing_pct_le_10:        1   # missing fraction ≤ 10 %
+    pq_lt_005:                2   # q (or p if single test) < 0.05
+    slope_ci_excludes_zero:   1   # 95 % slope CI does not cross 0
+    sign_stable_90pct:        2   # sign unchanged in ≥ 90 % of start/end windows
+    theil_sen_ols_agree:      1   # Theil-Sen and OLS-HAC agree in sign
+    leave_one_out_stable:     1   # leave-one-year-out sign unchanged
+  grades:  # inclusive-lower bounds, score 0–10
+    A: 8
+    B: 6
+    C: 4
+    D: 0
+
+# --- language — hooked into UI lint test ---
+language:
+  non_significant_phrase: "No statistically detectable trend at α = 0.05 with this data."
+  forbidden_phrases: ["causes", "due to", "proves"]
+  correlation_only_phrase: "is associated with"

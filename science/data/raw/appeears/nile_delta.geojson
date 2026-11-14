@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "name": "earthnext_nile_delta",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nile Delta",
+        "source": "EARTH//NEXT Stage 0 locked region",
+        "bbox_min_lat": 29.5,
+        "bbox_max_lat": 31.5,
+        "bbox_min_lon": 30.0,
+        "bbox_max_lon": 32.0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [30.0, 29.5],
+          [32.0, 29.5],
+          [32.0, 31.5],
+          [30.0, 31.5],
+          [30.0, 29.5]
+        ]]
+      }
+    }
+  ]
+}

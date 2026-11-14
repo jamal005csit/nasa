@@ -1,0 +1,51 @@
+# Secrets — never commit
+.env
+.env.local
+
+# Python caches + venvs (nested science/.gitignore also covers these; root is belt-and-suspenders)
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# JavaScript / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Downloaded NASA data — never commit the heavy files (reproducible from source).
+# Block by extension so the directory structure + GeoJSON region defs + READMEs + .gitkeep
+# placeholders all come through naturally (git's "ignore parent, re-include child" is unreliable).
+nasa_data/
+science/data/raw/**/*.nc
+science/data/raw/**/*.nc4
+science/data/raw/**/*.hdf
+science/data/raw/**/*.hdr
+science/data/raw/**/*.xml
+science/data/raw/**/*.tif
+science/data/raw/**/*.tiff
+science/data/raw/**/_supporting/
+science/data/processed/*.json
+# AppEEARS result CSVs are per-request and regeneratable, don't bother shipping
+science/data/raw/**/*-Statistics-*.csv
+science/data/raw/**/*-lookup.csv
+science/data/raw/**/*-granule-list.txt
+science/data/raw/**/*-request.json
+!science/tests/fixtures/
+!science/tests/fixtures/*.py
+!science/tests/fixtures/*.nc
+!science/tests/fixtures/README.md
+
+# Earth texture is bundled on purpose so the demo works offline; keep it.
+!web/public/textures/
+
+# OS detritus
+.DS_Store
+Thumbs.db
+desktop.ini
+

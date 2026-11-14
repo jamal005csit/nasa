@@ -1,0 +1,136 @@
+EARTH//NEXT - SPEC (give to the agent together with AGENTS.md)
+Challenge: Be an Earth System Trend Detective (NASA Space Apps 2026, theme "The Next Frontier")
+Hackathon: Nov 14-15, 2026. Quality and honesty beat feature count.
+
+NOTE: Where the official challenge text in docs/official/ disagrees with this file, the official text wins. Tell me about the conflict.
+
+=====================================================================
+1. PITCH
+=====================================================================
+EARTH//NEXT is a case-file investigation tool for Earth's changing systems. Pick a NASA variable, find where it is changing, test whether the change is real, see how robust it is, and explore what the trend implies for a decision, with every assumption visible.
+
+Tagline: Find the signal. Check the evidence. Test the assumptions.
+Headline: The planet is changing. Find the signal.
+Primary button: Open the case file. Secondary: Watch the 90-second tour.
+
+Spine ("The Case File"), every screen is one step:
+Signal -> Place -> Evidence -> Robustness -> Contrast -> Decision -> Limits
+
+Users: student explorer, analyst, regional planner, judge with 3 minutes.
+
+=====================================================================
+2. SCREENS (priority in brackets)
+=====================================================================
+Navigation: top bar (logo, planet switcher Earth/Moon/Mars, dataset chip, data-status dot); left rail (Mission Control, Signal Atlas, Trend Lab, Compare, Decision Lab, Brief, Frontier); collapsible right Evidence panel; bottom time scrubber. URL carries state (?var=&region=&period=&scenario=).
+
+1. Mission Control [P0]: globe fills screen, idle rotation (off with reduced motion). ONE featured finding card, shown only after it is computed from real data: variable, region, rate with units, ESI grade, one plain-language line. CTA opens Trend Lab.
+
+2. Signal Atlas [P0]: globe/2D map colored by sign and magnitude of trend, hatching/outline where q >= alpha (not significant). Pick variable and period; click region -> Trend Lab. Show count of cells tested and the FDR rule.
+
+3. Trend Lab [P0]: four answer cards in this order:
+   (1) What: variable, direction
+   (2) Where: region + map thumbnail
+   (3) How much: rate per year AND total change, each with 95% CI and units
+   (4) Is it significant: test name, p (or "p < 0.001"), q if many tests, alpha, plain verdict
+   Below: time series with trend line + CI band, optional deseasonalized view, "View as table" toggle. Right panel: n valid, missing %, ESI breakdown, caveats.
+   Every metric has an EVIDENCE RECEIPT button/drawer: source file/DOI, variable and units, filters, N valid / missing %, formula, library + version, script path, exact command that reproduces the number. Data comes from exported JSON only.
+
+4. Robustness Panel [P1]: (a) start/end-year sensitivity heatmap (sign + significance for every window with >= N years); (b) method agreement: Theil-Sen+MK vs OLS with HAC errors vs seasonal Kendall (if monthly); (c) leave-one-year-out min/max slope. One-line verdict computed from data, e.g. "Direction unchanged in 94% of windows." Never typed by hand.
+
+5. Compare / Region Duel [P0]: Region A vs B, same variable/period/method. Synchronized charts; map shows both; difference-of-slopes with bootstrap CI (do NOT conclude "different" from non-overlapping CIs). Warnings for resolution/unit/period mismatch. Language: "moved in opposite directions", never "caused by". Text from deterministic templates covering: both-significant-opposite, one-significant, neither-significant.
+
+6. Decision Lab [P0 core, P1 extras]:
+   Lens templates (wording + user threshold only):
+   - Planning lens: "At what date could the regional mean cross a threshold you choose?"
+   - Monitoring lens: "How many more years of data would tighten this slope CI to +/-X?" (computed from slope variance)
+   - Risk-communication lens: auto-generated allowed / not-allowed statements from the stats
+   Computations (closed form, formulas visible in a drawer):
+   - Time to threshold: t* = t_end + (T - y_end) / slope, evaluated at slope and at both CI ends. If the slope CI includes 0, show "cannot be bounded - trend not established" instead of a date.
+   - Scenarios (distinct color + dashed line, ALWAYS labeled "Illustrative scenario - not a validated causal forecast"): continuation with 95% slope-CI fan, stabilization (slope 0 after year X), reduced trend b' = b*(1 - r), custom slope b' in source units/year. Horizon capped at about the length of the observed record; warn beyond.
+   - Difference at horizon vs continuation.
+   Never claim an intervention's effect. The slider is a sensitivity tool.
+
+7. Decision Studio [P1 stretch, inside Decision Lab as a tab]: rank 2-6 analyzed regions for "where to look first".
+   - Evidence criteria from data: trend magnitude (normalized), confidence (from q), data coverage, direction.
+   - User-assumption criteria (exposure/importance), clearly marked ASSUMPTION and user-entered. No invented socioeconomic data.
+   - Weight sliders summing to 100%. Output: ranked list with stacked score breakdown.
+   - Sensitivity: one-way sweep of each weight showing the value where the top rank flips. Headline: "Ranking is robust / fragile".
+   - Label: "Decision support, not a recommendation. Assumptions are yours."
+
+8. Decision Brief [P0]: one page, deterministic templates fed by structured JSON: Finding, Evidence (with ESI), Regional context, Decision lens result, What we do not know, Sources & method. Export PDF and Markdown; shareable link. NO LLM-written text in the brief. Every sentence maps to a data field.
+
+9. Story Mode [P1]: 90-second autoplay tour (globe moves, panels reveal, numbers count in) with captions; skippable, keyboard-operable, reduced-motion safe. Also the demo video source and the safest live-demo fallback.
+
+10. Challenge Crosswalk [P0.5]: one page/drawer: each official requirement (paraphrased) -> link to the screen that answers it -> status. Filled from docs/official/challenge-statement.md.
+
+11. Frontier Explorer [P2]: Moon and Mars textured globes with sourced context cards (cite URL + license for each) and a few landmarks. Banner: "Planetary context mode - not part of the Earth trend analysis." Optional "Why monitor trends?" card per world: what is monitored there today and by which mission, ONLY claims with a citation. Never run the Earth trend engine on Moon/Mars; never invent telemetry. Stretch: planetary comparison (diameter, gravity, day length) from NASA fact sheets.
+
+12. Method & Sources [P0]: full audit trail, AI-use disclosure, attribution.
+
+=====================================================================
+3. SCIENCE RULES (non-negotiable)
+=====================================================================
+1. Order: inspect -> validate -> aggregate -> deseasonalize -> estimate -> test -> correct -> report.
+2. Seasonality: monthly data -> annual means with coverage rule (>= 9 of 12 valid months, configurable) OR Seasonal Kendall. Document the choice.
+3. Trend estimator: Theil-Sen slope with confidence interval.
+4. Test: Mann-Kendall with autocorrelation handled (prewhitening or Hamed-Rao modified MK). Check lag-1 autocorrelation and state which was used.
+5. Many cells: Benjamini-Hochberg FDR; report q and the number of tests.
+6. Regional means: cos(latitude) area weights; report valid-cell fraction.
+7. Keep source units on screen; conversions are named, tested functions.
+8. 95% CI on slope; total change = slope x span with propagated CI.
+9. Comparison: same method, same period; bootstrap CI on slope difference.
+10. Provenance on every result: source, variable, units, filters, N, missing %, script_commit, config_hash, data_checksum, library versions.
+11. Tests on known series: pure linear (slope recovered), zero-trend noise (rejection rate ~ alpha over many seeds), step change, strong seasonality (no false trend), AR(1) (modified MK less liberal than plain MK), missing-data patterns.
+12. Independent check: recompute one headline number with a second implementation (scipy theilslopes vs pyMannKendall vs hand calculation); record agreement in docs/methodology.md.
+13. Report p as "p < 0.001", never "0.000".
+
+EVIDENCE STRENGTH INDEX (ESI) - project-defined heuristic, disclosed as such. Score 0-10:
+  >= 15 years of valid annual data ............ 2
+  Missing fraction <= 10% ...................... 1
+  q (or p if single test) < 0.05 ............... 2
+  95% slope CI excludes 0 ...................... 1
+  Sign unchanged in >= 90% of start/end windows  2
+  Theil-Sen and OLS-HAC agree in sign .......... 1
+  Leave-one-year-out sign unchanged ............ 1
+Grades: A = 8-10, B = 6-7, C = 4-5, D = 0-3. Show breakdown on hover. Thresholds live in a config file (analysis.yaml), not in code. ESI describes evidence quality for a monotonic trend, NOT importance, cause, or risk.
+
+LANGUAGE RULES (enforce with a lint test on UI strings):
+- Non-significant -> "No statistically detectable trend at alpha = 0.05 with this data." Never "no change."
+- Never "causes", "due to", "proves". "Is associated with" only for correlation views.
+- Direction chips use symbol + word; increases are not good/bad by color alone.
+- You MAY say: "If the observed linear rate continued, the mean would cross X around year Y (95% range ...)". "Under a user-assumed stabilization, the gap at 2040 would be Z". "Another N years of data would narrow the slope CI to +/-...". "Evidence grade B: robust to start year, limited by 12 usable years".
+- You MAY NOT say: "It will cross X in year Y". "Policy P will reduce it by Z". "We need more data" with no number. "Strong proof".
+
+=====================================================================
+4. ARCHITECTURE
+=====================================================================
+Official data -> Python pipeline (ingest, validate, aggregate, trend, robustness, compare, scenarios, threshold, esi) -> validated JSON/GeoJSON in web/public/data/ -> Next.js static export (output: 'export') -> globe + charts.
+No database, no accounts, no runtime NASA calls. Demo must render with no network.
+Python modules: science/src/earthnext/{ingest,validate,provenance,trends,robustness,esi,threshold,compare,export}.py
+Web feature folders: web/src/features/{decision,story,crosswalk,frontier}, web/src/components/{globe,charts}
+Schemas: pydantic in Python, zod in web/src/lib/schemas.ts; a test validates every exported file in both.
+Payload budget: each JSON file < 1-2 MB (hard max 5 MB); precompute, simplify polygons, round floats, lazy-load detail by region.
+Fallbacks: lazy-loaded globe with 2D map fallback when WebGL is unavailable.
+Docs folder: docs/official/, docs/PROJECT_STATE.md, docs/resource-audit.md, docs/methodology.md, docs/sources-and-attribution.md, docs/ai-use-log.md, docs/ai-use-disclosure.md, docs/demo-script.md.
+
+=====================================================================
+5. DESIGN TOKENS
+=====================================================================
+bg #070B14, surface #0E1624, surface-2 #141F33, border rgba(160,190,230,.14), text #EAF1FB, muted #8FA3BF, accent cyan #38D7FF, warn amber #FFB547, negative coral #FF7A6B, positive mint #5EE6B0.
+Fonts: Space Grotesk (UI), IBM Plex Mono (numbers, tabular-nums).
+Rules: one accent per view; every color paired with a symbol or label; 4.5:1 contrast minimum; visible focus rings; prefers-reduced-motion disables rotation and count-up; motion 200-300 ms ease-out, globe fly-to <= 900 ms; no autoplay audio. 1440px and 1280x720 both first-class; mobile gets a stacked read-only view (Brief + Trend Lab).
+Branding: original identity only; no NASA logos/insignia. Textures only from NASA-hosted sources whose license was read; record each in docs/sources-and-attribution.md.
+
+=====================================================================
+6. SCOPE CONTROL
+=====================================================================
+CUT ORDER (first cut first): Arabic toggle -> Q&A bot -> Frontier "why monitor" cards -> Moon/Mars beyond textured globe + info panel -> extra variables -> Local Lens -> Decision Studio -> Robustness leave-one-out -> shareable URL.
+NEVER CUT: real NASA data, valid statistics, trend + significance + CI, compare, evidence receipts, provenance, Decision Lab basics (time-to-threshold + scenarios), Decision Brief, crosswalk, working public deploy, AI-use disclosure.
+Feature freeze 4 hours before the deadline. No new dependencies after freeze. Submit at least 2 hours early.
+
+=====================================================================
+7. SUBMISSION FACTS (verify against the Nov 13 guides in docs/official/)
+=====================================================================
+Judging lenses (2024/2025 wording): Impact/Influence, Creativity, Validity, Relevance, Presentation.
+Must respond to an official challenge. Teams of 1-6. Submission opens Nov 14 9:00 a.m. local time. Judging begins Nov 16.
+Submission needs: title, one-liner, description (about 150 words), exact dataset names, references for every dataset/library/texture/font/AI tool, AI-use disclosure, public no-password URL, repo link, public demo video, English subtitles if narration is not English.

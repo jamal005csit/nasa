@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SPEC §5: numbers use tabular-nums for aligned columns. */
+.font-mono,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle starfield / gradient backdrop for Mission Control etc. */
+.bg-space {
+  background:
+    radial-gradient(1200px circle at 70% 20%, rgba(56, 215, 255, 0.07), transparent 60%),
+    radial-gradient(900px circle at 20% 80%, rgba(94, 230, 176, 0.05), transparent 60%),
+    #070B14;
+}
+
+/* Glassy "pill" used for overlay chips (Last update, dataset chip, etc.) */
+.pill-glass {
+  background: rgba(2, 12, 28, 0.82);
+  border: 1px solid #1C2A44;
+  border-radius: 10px;
+  padding: 8px 11px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Pulsing dot used for live-status indicators. */
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(94, 230, 176, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(94, 230, 176, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(94, 230, 176, 0); }
+}
+.dot-pulse-positive { animation: pulse-ring 2s infinite; }
+@keyframes pulse-ring-warn {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 181, 71, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 181, 71, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 181, 71, 0); }
+}
+.dot-pulse-warn { animation: pulse-ring-warn 2s infinite; }
+
+/* SPEC §5: respect reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

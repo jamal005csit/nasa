@@ -1,0 +1,20 @@
+{
+  "name": "earth-next",
+  "version": "0.0.0",
+  "private": true,
+  "description": "EARTH//NEXT - NASA Space Apps 2026 'Be an Earth System Trend Detective'. Case-file investigation tool for Earth-system trends. See docs/SPEC.txt.",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "test": "node scripts/test.mjs",
+    "test:web": "pnpm --dir web run test:ci",
+    "test:py": "node scripts/run-py.mjs -m pytest science/tests -q",
+    "lint:py": "node scripts/run-py.mjs -m ruff check science",
+    "dev": "pnpm --dir web dev",
+    "build": "pnpm --dir web build",
+    "process": "node scripts/process.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@12.18.0"
+}

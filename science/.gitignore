@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+# Heavy NASA data files only — keep the directory structure + READMEs + GeoJSONs.
+data/raw/**/*.nc
+data/raw/**/*.nc4
+data/raw/**/*.hdf
+data/raw/**/*.hdr
+data/raw/**/*.xml
+data/raw/**/*.tif
+data/raw/**/*.tiff
+data/raw/**/_supporting/
+data/processed/*.json

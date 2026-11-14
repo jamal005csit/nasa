@@ -1,0 +1,14 @@
+Project iteru kami
+Summary
+EARTH//NEXT is an interactive AI-powered planetary risk simulator that transforms NASA scientific data into an engaging experience for exploring Earth's future and humanity's possibilities beyond it. The platform enables users to investigate Earth's environmental conditions, explore planetary risks, and examine the habitability challenges of the Moon and Mars through interactive visualizations and scenario-based simulations. By combining NASA data, AI-assisted insights, and interactive decision-making, EARTH//NEXT bridges the gap between complex scientific information and public understanding. Rather than simply displaying data, it allows users to explore possible scenarios, understand the consequences of changing environmental factors, and make informed comparisons between planetary environments. The project addresses the challenge of making Earth and space science more accessible and actionable. Its importance lies in encouraging environmental awareness, supporting data-driven decisions, and inspiring people to think critically about Earth's sustainability and humanity's future beyond our planet.
+Project Details
+EARTH//NEXT - AI Planetary Risk Simulator
+EARTH//NEXT is an interactive planetary exploration and decision-support platform that transforms NASA Earth and space science data into meaningful simulations and insights. It allows users to explore Earth's environmental conditions, investigate potential planetary risks, and examine the challenges of human exploration and settlement on the Moon and Mars.
+
+The platform combines NASA datasets, interactive visualizations, and AI-assisted analysis to help users understand complex planetary systems. Users can explore environmental factors, adjust simulation parameters, compare scenarios, and observe how different conditions may influence planetary futures.
+
+The project's primary benefit is making scientific data more accessible, understandable, and actionable. Its intended impact is to encourage environmental awareness, support data-driven thinking, and inspire informed discussions about Earth's sustainability and humanity's future beyond Earth.
+
+What makes EARTH//NEXT creative is its combination of planetary science, interactive simulation, and decision-making within a unified experience rather than presenting information through conventional dashboards. The team considered scientific relevance, data reliability, usability, visualization clarity, accessibility, and the limitations of available datasets when developing the concept.
+
+The project was developed using modern web technologies, programming tools, NASA data resources and APIs, and AI-assisted capabilities to create an engaging and interactive planetary experience.

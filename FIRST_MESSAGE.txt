@@ -1,0 +1,15 @@
+EARTH//NEXT - FIRST MESSAGE TO THE AGENT (paste this to start)
+
+Folder setup before you paste:
+  AGENTS.md
+  docs/SPEC.txt           (rename or copy from SPEC.txt)
+  docs/PROJECT_STATE.txt  (or .md)
+  docs/official/          (challenge statement, Nov 13 guides, resource pack list)
+  STAGE_PROMPTS.txt       (keep for yourself; paste stages one at a time)
+
+----- paste below this line -----
+
+Read AGENTS.md, docs/PROJECT_STATE.txt and docs/SPEC.txt in full. Then read everything in docs/official/.
+Do STAGE 0 only: write docs/resource-audit.md and docs/crosswalk-source.md. Do not write any code and do not run any analysis.
+Do not invent anything not found in the files; put unknowns in the "Unknowns" section.
+When finished, propose the smallest valid data path and two candidate region pairs, then ask me to approve the variable and region pair before anything else happens.

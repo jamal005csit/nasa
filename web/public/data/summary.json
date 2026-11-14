@@ -1,0 +1,48 @@
+{
+  "source": {
+    "kind": "NASA",
+    "note": "MOD13A3.061 via NASA AppEEARS (nile_delta=1, sahara_interior=1 monthly files)."
+  },
+  "generated_at": "2026-11-14T19:35:43Z",
+  "dataset_short_name": "MOD13A3",
+  "dataset_version": "061",
+  "variable": "ndvi",
+  "units": "1",
+  "time_range": [
+    "2000-01",
+    "2026-12"
+  ],
+  "regions": [
+    {
+      "slug": "nile_delta",
+      "name": "Nile Delta",
+      "bbox": {
+        "min_lat": 29.5,
+        "max_lat": 31.5,
+        "min_lon": 30.0,
+        "max_lon": 32.0
+      }
+    },
+    {
+      "slug": "sahara_interior",
+      "name": "Sahara Interior (Western Desert, Egypt)",
+      "bbox": {
+        "min_lat": 24.0,
+        "max_lat": 26.0,
+        "min_lon": 26.0,
+        "max_lon": 28.0
+      }
+    }
+  ],
+  "featured_finding": {
+    "region_slug": "nile_delta",
+    "sentence": "In the Nile Delta, annual-mean NDVI increased at +0.0008 per year (95% CI +0.0005 to +0.0011) between 2000 and 2026 (p < 0.001, hamed_rao test).",
+    "slope_per_year": 0.000794303596517893,
+    "slope_ci95": [
+      0.0005004438057221033,
+      0.0011037913734819355
+    ],
+    "p": 3.2957823137280684e-9,
+    "esi_grade": null
+  }
+}
