@@ -64,27 +64,7 @@ def open_appeears(source: AppEEARSSource) -> xr.Dataset:
 
     datasets = []
     for p in sorted(source.files):
-        # Open with decode_times=False so we can decode the Julian-calendar
-        # time axis ourselves into datetime64 (xarray refuses to do this
-        # automatically and cftime→pandas doesn't work either). All our dates
-        # (2000–2026) fall after the Julian/Gregorian divergence era, so a
-        # straight "seconds since reference" conversion is correct.
-        ds = xr.open_dataset(p, mask_and_scale=True, decode_times=False)
-        if "time" in ds.variables and ds["time"].attrs.get("units", "").startswith(
-            "seconds since"
-        ):
-            import re
-
-            m = re.match(
-                r"seconds since\s+(\d{4}-\d{2}-\d{2})",
-                ds["time"].attrs["units"],
-            )
-            if m:
-                ref = np.datetime64(m.group(1))
-                secs = ds["time"].values.astype("int64")
-                ds = ds.assign_coords(
-                    time=("time", ref + secs * np.timedelta64(1, "s"))
-                )
+        ds = _open_one(p)
         ndvi_name = _find_var(ds, ["ndvi", "_1_km_monthly_NDVI",
                                     "CMG_0_05_Deg_Monthly_NDVI"])
         reliab_name = _find_var(
@@ -117,6 +97,41 @@ def open_appeears(source: AppEEARSSource) -> xr.Dataset:
         "source_files": [p.name for p in source.files],
     }
     return combined
+
+
+def _open_one(p: Path) -> xr.Dataset:
+    """Open a single NetCDF. Branches on the time axis's calendar attribute:
+
+    - Standard calendars (e.g. our DEMO fixture) → let xarray do its default
+      CF decode; it returns datetime64 happily.
+    - Julian calendar (what NASA AppEEARS stamps on its output) → xarray
+      refuses to decode to datetime64 and cftime objects don't convert to
+      pandas Timestamps, so we open with decode_times=False and manually
+      decode the "seconds since YYYY-MM-DD" axis. Safe for our 2000+ dates.
+    """
+    # Peek at the raw time attrs to pick a strategy. decode_cf=False keeps
+    # everything untouched, including the 'calendar' attr on the time var.
+    with xr.open_dataset(p, decode_cf=False) as probe:
+        time_attrs = dict(probe["time"].attrs) if "time" in probe.variables else {}
+    calendar = str(time_attrs.get("calendar", "")).lower()
+
+    if calendar in {"julian", "proleptic_julian"}:
+        import re
+
+        ds = xr.open_dataset(p, mask_and_scale=True, decode_times=False)
+        units = ds["time"].attrs.get("units", "")
+        m = re.match(r"seconds since\s+(\d{4}-\d{2}-\d{2})", units)
+        if not m:
+            raise ValueError(
+                f"{p.name}: Julian calendar but unrecognised time units: {units!r}"
+            )
+        ref = np.datetime64(m.group(1))
+        secs = ds["time"].values.astype("int64")
+        ds = ds.assign_coords(time=("time", ref + secs * np.timedelta64(1, "s")))
+        return ds
+
+    # Standard path for everything else — including our DEMO fixture.
+    return xr.open_dataset(p, mask_and_scale=True)
 
 
 def _find_var(ds: xr.Dataset, candidates: list[str], *, required: bool = True) -> str | None:

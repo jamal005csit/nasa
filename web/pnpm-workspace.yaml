@@ -1,0 +1,4 @@
+# pnpm 10+ moved package-level config out of package.json into this file.
+# We only need to pre-approve esbuild's postinstall (it compiles native binaries).
+onlyBuiltDependencies:
+  - esbuild
