@@ -106,6 +106,24 @@ export const Summary = z.object({
   featured_finding: FeaturedFinding,
 });
 
+export const ESIResult = z.object({
+  score: z.number(),
+  grade: z.enum(["A", "B", "C", "D"]),
+  breakdown: z.record(z.string(), z.number()),
+  label: z.string(),
+});
+
+export const RobustnessResult = z.object({
+  sign_stable_pct: z.number(),
+  ts_ols_agree: z.boolean(),
+  loo_stable: z.boolean(),
+  loo_min_slope: z.number(),
+  loo_max_slope: z.number(),
+  windows_tested: z.number().int(),
+  windows_same_sign: z.number().int(),
+  min_window_years: z.number().int(),
+});
+
 export const RegionExport = z.object({
   source: SourceLabel,
   region: RegionMeta,
@@ -114,6 +132,8 @@ export const RegionExport = z.object({
   significance: SignificanceResult,
   coverage: Coverage,
   provenance: Provenance,
+  esi: ESIResult.nullable().optional(),
+  robustness: RobustnessResult.nullable().optional(),
 });
 
 export type SummaryT = z.infer<typeof Summary>;

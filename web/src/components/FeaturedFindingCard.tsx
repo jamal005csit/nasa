@@ -61,8 +61,18 @@ export function FeaturedFindingCard({ summary }: { summary: SummaryT }) {
         />
       </div>
 
-      <div className="text-xs text-muted mb-3">
-        <span data-testid="featured-ci">{formatCI(f.slope_ci95)}</span>
+      {f.esi_grade ? (
+        <div className="mb-3 pill-glass text-xs flex items-center gap-2" data-testid="featured-esi">
+          <span className={`font-mono ${
+            f.esi_grade === "A" ? "text-positive" : f.esi_grade === "B" ? "text-accent"
+            : f.esi_grade === "C" ? "text-warn" : "text-negative"
+          }`}>ESI {f.esi_grade}</span>
+          <span className="text-muted">Evidence Strength Index — project-defined heuristic</span>
+        </div>
+      ) : null}
+
+      <div className="text-xs text-muted mb-3" data-testid="featured-ci">
+        {formatCI(f.slope_ci95)}
       </div>
 
       <p

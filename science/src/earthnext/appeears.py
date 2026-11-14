@@ -62,8 +62,18 @@ def open_appeears(source: AppEEARSSource) -> xr.Dataset:
     if not source.files:
         raise ValueError(f"open_appeears: no files for region {source.region_slug}")
 
+    # If there's exactly one file, try decode_times=True first (handles DEMO
+    # multi-timestep files and single-file AppEEARS)
+    if len(source.files) == 1:
+        try:
+            return _open_single(source.files[0])
+        except Exception:
+            pass
+
+    # Multi-file path: open each with manual time decode
     datasets = []
     for p in sorted(source.files):
+<<<<<<< HEAD
         ds = _open_one(p)
         ndvi_name = _find_var(ds, ["ndvi", "_1_km_monthly_NDVI",
                                     "CMG_0_05_Deg_Monthly_NDVI"])
@@ -88,6 +98,10 @@ def open_appeears(source: AppEEARSSource) -> xr.Dataset:
             raise ValueError(f"{p.name}: no time coordinate — not a valid AppEEARS file")
 
         datasets.append(ndvi.to_dataset(name="ndvi"))
+=======
+        ds = _open_one_appeears(p)
+        datasets.append(ds)
+>>>>>>> 2a62f11 (Stages 7-8: ESI+Robustness, Compare page, Decision Lab engine, Crosswalk, cleanup)
 
     combined = xr.concat(datasets, dim="time").sortby("time") \
         if len(datasets) > 1 else datasets[0]
@@ -99,6 +113,7 @@ def open_appeears(source: AppEEARSSource) -> xr.Dataset:
     return combined
 
 
+<<<<<<< HEAD
 def _open_one(p: Path) -> xr.Dataset:
     """Open a single NetCDF. Branches on the time axis's calendar attribute:
 
@@ -132,6 +147,64 @@ def _open_one(p: Path) -> xr.Dataset:
 
     # Standard path for everything else — including our DEMO fixture.
     return xr.open_dataset(p, mask_and_scale=True)
+=======
+def _open_single(p: Path) -> xr.Dataset:
+    """Open a single NetCDF file with CF time decoding (handles DEMO files)."""
+    ds = xr.open_dataset(p, mask_and_scale=True, decode_times=True)
+    ndvi_name = _find_var(ds, ["ndvi", "_1_km_monthly_NDVI",
+                                "CMG_0_05_Deg_Monthly_NDVI"])
+    reliab_name = _find_var(
+        ds, ["pixel_reliability", "_1_km_monthly_pixel_reliability",
+             "CMG_0_05_Deg_Monthly_pixel_reliability"], required=False,
+    )
+    ndvi = _decode_ndvi(ds[ndvi_name])
+    if reliab_name is not None:
+        ndvi = _mask_bad_reliability(ndvi, ds[reliab_name])
+    ndvi = _normalize_dims(ndvi)
+    return ndvi.to_dataset(name="ndvi")
+
+
+def _open_one_appeears(p: Path) -> xr.Dataset:
+    """Open a single-timestep AppEEARS file with manual Julian time decode."""
+    ds = xr.open_dataset(p, mask_and_scale=True, decode_times=False)
+    if "time" in ds.variables and ds["time"].attrs.get("units", "").startswith(
+        "seconds since"
+    ):
+        import re
+        m = re.match(
+            r"seconds since\s+(\d{4}-\d{2}-\d{2})",
+            ds["time"].attrs["units"],
+        )
+        if m:
+            ref = np.datetime64(m.group(1))
+            secs = ds["time"].values.astype("int64")
+            ds = ds.assign_coords(
+                time=("time", ref + secs * np.timedelta64(1, "s"))
+            )
+    ndvi_name = _find_var(ds, ["ndvi", "_1_km_monthly_NDVI",
+                                "CMG_0_05_Deg_Monthly_NDVI"])
+    reliab_name = _find_var(
+        ds, ["pixel_reliability", "_1_km_monthly_pixel_reliability",
+             "CMG_0_05_Deg_Monthly_pixel_reliability"], required=False,
+    )
+    ndvi = _decode_ndvi(ds[ndvi_name])
+    if reliab_name is not None:
+        ndvi = _mask_bad_reliability(ndvi, ds[reliab_name])
+    ndvi = _normalize_dims(ndvi)
+    if "time" not in ndvi.dims and "time" not in ndvi.coords:
+        raise ValueError(f"{p.name}: no time coordinate — not a valid AppEEARS file")
+    return ndvi.to_dataset(name="ndvi")
+
+
+def _normalize_dims(ndvi: xr.DataArray) -> xr.DataArray:
+    """Normalize dim and coord names."""
+    return ndvi.rename({
+        d: new for d, new in [
+            ("lat", "lat"), ("latitude", "lat"),
+            ("lon", "lon"), ("longitude", "lon"),
+        ] if d in ndvi.dims
+    })
+>>>>>>> 2a62f11 (Stages 7-8: ESI+Robustness, Compare page, Decision Lab engine, Crosswalk, cleanup)
 
 
 def _find_var(ds: xr.Dataset, candidates: list[str], *, required: bool = True) -> str | None:

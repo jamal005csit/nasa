@@ -31,9 +31,11 @@ from earthnext.provenance import (
 from earthnext.schemas import (
     AnnualSeries,
     Coverage,
+    ESIResultSchema,
     FeaturedFinding,
     RegionExport,
     RegionMeta,
+    RobustnessSchema,
     SignificanceResult,
     SourceLabel,
     Summary,
@@ -45,6 +47,8 @@ from earthnext.trends import (
     choose_mk_variant,
     theil_sen_ci,
 )
+from earthnext.esi import compute_esi
+from earthnext.robustness import robustness_report
 
 
 def _format_p(p: float) -> str:
@@ -207,6 +211,43 @@ def build_region_export(
         ),
         generated_at=now_utc_iso(),
     )
+    # Stage 7: ESI + robustness
+    years_arr = np.array([y for y, v in zip(annual.years, annual.values) if v is not None], dtype=float)
+    vals_arr = np.array([v for v in annual.values if v is not None], dtype=float)
+
+    rob = robustness_report(vals_arr, years_arr,
+                            min_window_years=15,
+                            confidence=config["trend"]["confidence_level"])
+
+    esi_result = compute_esi(
+        n_valid_years=coverage.n_valid_years,
+        missing_pct=coverage.missing_pct,
+        p=sig.p,
+        q=None,
+        slope_ci_excludes_zero=trend.slope_ci_excludes_zero,
+        sign_stable_pct=rob.sign_stable_pct,
+        theil_sen_ols_agree=rob.ts_ols_agree,
+        leave_one_out_stable=rob.loo_stable,
+        config=config,
+    )
+
+    esi_schema = ESIResultSchema(
+        score=esi_result.score,
+        grade=esi_result.grade,
+        breakdown=esi_result.breakdown,
+        label=esi_result.grade_label(),
+    )
+    rob_schema = RobustnessSchema(
+        sign_stable_pct=rob.sign_stable_pct,
+        ts_ols_agree=rob.ts_ols_agree,
+        loo_stable=rob.loo_stable,
+        loo_min_slope=rob.loo_min_slope,
+        loo_max_slope=rob.loo_max_slope,
+        windows_tested=rob.windows_tested,
+        windows_same_sign=rob.windows_same_sign,
+        min_window_years=rob.min_window_years,
+    )
+
     return RegionExport(
         source=source,
         region=region_meta,
@@ -215,6 +256,8 @@ def build_region_export(
         significance=sig,
         coverage=coverage,
         provenance=prov,
+        esi=esi_schema,
+        robustness=rob_schema,
     )
 
 
@@ -257,7 +300,7 @@ def build_summary(
         slope_per_year=picked.trend.slope_per_year,
         slope_ci95=picked.trend.slope_ci95,
         p=picked.significance.p,
-        esi_grade=None,
+        esi_grade=picked.esi.grade if picked.esi else None,
     )
     return Summary(
         source=source,

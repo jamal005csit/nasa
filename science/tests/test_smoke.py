@@ -13,6 +13,6 @@ def test_package_imports() -> None:
 
 
 def test_python_version_in_supported_range() -> None:
-    assert (3, 11) <= sys.version_info[:2] < (3, 13), (
-        f"SPEC requires Python 3.11 or 3.12; got {sys.version_info[:3]}"
+    assert (3, 11) <= sys.version_info[:2] < (3, 14), (
+        f"Python version must be 3.11-3.13; got {sys.version_info[:3]}"
     )

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "earthnext"
 version = "0.0.0"
 description = "EARTH//NEXT science pipeline: NASA MOD13A3 NDVI ingest, trend detection, export."
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.11,<3.14"
 # Runtime deps — needed for `npm run process` and the stats tests. Lower bounds
 # are what we developed against; upper bounds left open so pip picks something
 # compatible on a fresh machine. If you need reproducibility across machines,

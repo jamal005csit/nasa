@@ -12,9 +12,10 @@ const ITEMS: Item[] = [
   { href: "/", label: "Mission Control", stage: "Stage 5" },
   { href: "/atlas", label: "Signal Atlas", stage: "Stage 6" },
   { href: "/trend-lab", label: "Trend Lab", stage: "Stage 6" },
-  { href: "/compare", label: "Compare", stage: "Stage 8", disabled: true },
+  { href: "/compare", label: "Compare", stage: "Stage 8" },
   { href: "/decision-lab", label: "Decision Lab", stage: "Stage 9", disabled: true },
   { href: "/brief", label: "Brief", stage: "Stage 9", disabled: true },
+  { href: "/crosswalk", label: "Crosswalk", stage: "Stage 10" },
   { href: "/frontier", label: "Frontier", stage: "Stage 10", disabled: true },
 ];
 

@@ -83,6 +83,24 @@ class SourceLabel(_Base):
     note: str
 
 
+class ESIResultSchema(_Base):
+    score: float
+    grade: Literal["A", "B", "C", "D"]
+    breakdown: dict[str, float]
+    label: str
+
+
+class RobustnessSchema(_Base):
+    sign_stable_pct: float
+    ts_ols_agree: bool
+    loo_stable: bool
+    loo_min_slope: float
+    loo_max_slope: float
+    windows_tested: int
+    windows_same_sign: int
+    min_window_years: int
+
+
 class FeaturedFinding(_Base):
     region_slug: str
     sentence: str
@@ -116,3 +134,5 @@ class RegionExport(_Base):
     significance: SignificanceResult
     coverage: Coverage
     provenance: Provenance
+    esi: ESIResultSchema | None = None
+    robustness: RobustnessSchema | None = None

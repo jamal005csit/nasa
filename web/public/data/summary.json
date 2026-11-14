@@ -3,7 +3,7 @@
     "kind": "NASA",
     "note": "MOD13A3.061 via NASA AppEEARS (nile_delta=1, sahara_interior=1 monthly files)."
   },
-  "generated_at": "2026-11-14T19:35:43Z",
+  "generated_at": "2026-11-14T22:50:00Z",
   "dataset_short_name": "MOD13A3",
   "dataset_version": "061",
   "variable": "ndvi",
@@ -43,6 +43,6 @@
       0.0011037913734819355
     ],
     "p": 3.2957823137280684e-9,
-    "esi_grade": null
+    "esi_grade": "A"
   }
 }
